@@ -9,7 +9,6 @@ import (
 	"github.com/looplab/eventhorizon/uuid"
 	"go.uber.org/zap"
 
-	"wallet-api/domain/errors"
 	"wallet-api/domain/events"
 )
 
@@ -43,7 +42,7 @@ func (p *BalanceProjector) Project(_ context.Context, event eventhorizon.Event, 
 	balance, ok := entity.(*Balance)
 	if !ok {
 		zap.S().Errorf("projection entity could not be handled: %v", entity)
-		return nil, internalErrors.ErrUnprocessable{Message: "Projection entity could not be handled"}
+		return nil, domain.ErrUnprocessable{Message: "Projection entity could not be handled"}
 	}
 	switch event.EventType() {
 	case domain.WalletCreatedEvent:
@@ -67,7 +66,7 @@ func applyCreatEvent(event eventhorizon.Event, balance *Balance) error {
 	content, ok := event.Data().(*events.WalletCreatedContent)
 	if !ok {
 		zap.S().Errorf("wallet creation event content could not be handled by projector: %v", content)
-		return internalErrors.ErrUnprocessable{Message: "Create wallet event content could not be handled"}
+		return domain.ErrUnprocessable{Message: "Create wallet event content could not be handled"}
 	}
 	balance.WalletID = event.AggregateID()
 	return nil
@@ -77,7 +76,7 @@ func applyCreditEvent(event eventhorizon.Event, balance *Balance) error {
 	content, ok := event.Data().(*events.WalletCreditedContent)
 	if !ok {
 		zap.S().Errorf("wallet credit event content could not be handled by projector: %v", content)
-		return internalErrors.ErrUnprocessable{Message: "Wallet credit event content could not be handled"}
+		return domain.ErrUnprocessable{Message: "Wallet credit event content could not be handled"}
 	}
 	balance.Amount += content.Amount
 	return nil
@@ -87,7 +86,7 @@ func applyDebitEvent(event eventhorizon.Event, balance *Balance) error {
 	content, ok := event.Data().(*events.WalletDebitedContent)
 	if !ok {
 		zap.S().Errorf("wallet debit event content could not be handled by projector: %v", content)
-		return internalErrors.ErrUnprocessable{Message: "Wallet debit event content could not be handled"}
+		return domain.ErrUnprocessable{Message: "Wallet debit event content could not be handled"}
 	}
 	balance.Amount -= content.Amount
 	return nil

@@ -1,4 +1,4 @@
-package internalErrors
+package domain
 
 type ErrNotFound struct {
 	Message string

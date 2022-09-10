@@ -3,11 +3,10 @@ package api
 import (
 	"errors"
 	"net/http"
+	"wallet-api/domain"
 
 	"github.com/looplab/eventhorizon"
 	renderPkg "github.com/unrolled/render"
-
-	"wallet-api/domain/errors"
 )
 
 var Render *renderPkg.Render
@@ -29,14 +28,14 @@ func mapApplicationErrToStatusCode(err error) int {
 	switch err.(type) {
 	case ErrInvalidAttribute, ErrInvalidID, ErrInvalidPayload:
 		return http.StatusBadRequest
-	case internalErrors.ErrNotFound:
+	case domain.ErrNotFound:
 		return http.StatusNotFound
-	case internalErrors.ErrIncompatibleProjectionVersion, internalErrors.ErrInsufficientAmount:
+	case domain.ErrIncompatibleProjectionVersion, domain.ErrInsufficientAmount:
 		return http.StatusConflict
-	case internalErrors.ErrUnprocessable:
+	case domain.ErrUnprocessable:
 		return http.StatusUnprocessableEntity
 	case *eventhorizon.AggregateError:
-		if errors.As(err.(*eventhorizon.AggregateError).Err, &internalErrors.ErrNotFound{}) {
+		if errors.As(err.(*eventhorizon.AggregateError).Err, &domain.ErrNotFound{}) {
 			return http.StatusNotFound
 		}
 		return http.StatusInternalServerError

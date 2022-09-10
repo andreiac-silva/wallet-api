@@ -12,7 +12,6 @@ import (
 	"go.uber.org/zap"
 
 	"wallet-api/domain/commands"
-	"wallet-api/domain/errors"
 	"wallet-api/domain/events"
 )
 
@@ -60,7 +59,7 @@ func (w *Wallet) HandleCommand(ctx context.Context, cmd eh.Command) error {
 		return nil
 	default:
 		zap.S().Errorf("invalid command: %v", cmd)
-		return internalErrors.ErrUnprocessable{Message: "Command could not be processed"}
+		return domain.ErrUnprocessable{Message: "Command could not be processed"}
 	}
 }
 
@@ -72,7 +71,7 @@ func (w *Wallet) ApplyEvent(_ context.Context, e eh.Event) error {
 			return nil
 		}
 		zap.S().Errorf("invalid event data: %v", e.Data())
-		return internalErrors.ErrUnprocessable{Message: "Event data could not be processed"}
+		return domain.ErrUnprocessable{Message: "Event data could not be processed"}
 	default:
 		return nil
 	}
@@ -90,7 +89,7 @@ func (w *Wallet) validateDebitAttempt(ctx context.Context, amount int64) error {
 			balance.Version,
 			w.AggregateVersion(),
 		)
-		return internalErrors.ErrIncompatibleProjectionVersion{
+		return domain.ErrIncompatibleProjectionVersion{
 			Message: "Operation refused because wallet balance is not up to date",
 		}
 	}
