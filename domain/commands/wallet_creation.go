@@ -12,8 +12,8 @@ type CreateWallet struct {
 	DocumentNumber string    `json:"document_number"`
 }
 
-func NewCreateWalletCommand(id uuid.UUID, documentNumber string) *CreateWallet {
-	return &CreateWallet{
+func NewCreateWalletCommand(id uuid.UUID, documentNumber string) CreateWallet {
+	return CreateWallet{
 		ID:             id,
 		DocumentNumber: documentNumber,
 	}
