@@ -21,6 +21,7 @@ type Wallet struct {
 	balanceUc usecases.BalanceUseCase
 
 	documentNumber string
+	// Other aggregate fields...
 }
 
 func NewWallet(id uuid.UUID, balanceUc usecases.BalanceUseCase) *Wallet {
