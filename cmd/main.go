@@ -23,9 +23,9 @@ func main() {
 
 	mongoClient := db.SetupMongoClient()
 
+	outbox := eventsourcing.SetupOutbox(mongoClient)
 	eventBus := eventsourcing.SetupEventBus()
-	eventStore := eventsourcing.SetupEventStore(eventBus)
-	outbox := eventsourcing.SetupOutbox(ctx, mongoClient, eventBus)
+	eventStore := eventsourcing.SetupEventStore(outbox)
 	commandBus := eventsourcing.SetupCommandBus()
 	balanceRepo := eventsourcing.SetupBalanceRepository(mongoClient)
 	balanceUc := usecases.NewBalanceUseCase(balanceRepo)

@@ -31,10 +31,15 @@ func Setup(
 	registerEvents()
 	registerAggregates(balanceUc)
 
+	// Add the Event Bus as the last handler of the outbox.
+	if err := outbox.AddHandler(ctx, eventhorizon.MatchAll{}, eventBus); err != nil {
+		zap.S().Fatal("could not add event bus to outbox:", err)
+	}
+
 	// Add a logger as an observer.
 	if err := eventBus.AddHandler(ctx, eventhorizon.MatchAll{},
 		eventhorizon.UseEventHandlerMiddleware(&Logger{})); err != nil {
-		zap.S().Error("failure to add logger as an observer, error", err)
+		zap.S().Error("failure to add logger as an observer", "error", err)
 	}
 
 	// Create the aggregate store.

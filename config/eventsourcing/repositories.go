@@ -32,5 +32,6 @@ func SetupBalanceRepository(mongoClient *mongo.Client) BalanceRepository {
 	balanceRepo := version.NewRepo(repo)
 
 	zap.S().Debug("balance repository setup has been done")
+
 	return BalanceRepository{ReadWriteRepo: balanceRepo}
 }

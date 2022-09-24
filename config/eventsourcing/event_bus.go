@@ -23,5 +23,6 @@ func SetupEventBus() *gcp.EventBus {
 	}()
 
 	zap.S().Debug("event bus setup has been done")
+
 	return eventBus
 }
