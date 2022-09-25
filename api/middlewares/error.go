@@ -1,32 +1,26 @@
-package api
+package middlewares
 
 import (
 	"errors"
 	"net/http"
-	"wallet-api/domain"
 
+	"github.com/gin-gonic/gin"
 	"github.com/looplab/eventhorizon"
-	renderPkg "github.com/unrolled/render"
+
+	"wallet-api/api"
+	"wallet-api/domain"
 )
 
-var Render *renderPkg.Render
-
-func init() {
-	Render = renderPkg.New()
-}
-
-type Handler func(w http.ResponseWriter, r *http.Request) error
-
-func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if err := h(w, r); err != nil {
-		statusCode := mapApplicationErrToStatusCode(err)
-		Render.JSON(w, statusCode, err.Error())
+func ErrorHandler(c *gin.Context) {
+	c.Next()
+	for _, err := range c.Errors {
+		c.JSON(mapApplicationErrToStatusCode(err), err.Error())
 	}
 }
 
 func mapApplicationErrToStatusCode(err error) int {
 	switch err.(type) {
-	case ErrInvalidAttribute, ErrInvalidID, ErrInvalidPayload:
+	case api.ErrInvalidAttribute, api.ErrInvalidID, api.ErrInvalidPayload:
 		return http.StatusBadRequest
 	case domain.ErrNotFound:
 		return http.StatusNotFound

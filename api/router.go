@@ -1,9 +1,9 @@
 package api
 
 import (
-	"github.com/go-chi/chi/v5"
+	"github.com/gin-gonic/gin"
 )
 
 type Router interface {
-	Routes(router *chi.Mux)
+	Routes(router *gin.Engine)
 }

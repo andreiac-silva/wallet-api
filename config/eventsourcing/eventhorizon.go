@@ -39,7 +39,7 @@ func Setup(
 	// Add a logger as an observer.
 	if err := eventBus.AddHandler(ctx, eventhorizon.MatchAll{},
 		eventhorizon.UseEventHandlerMiddleware(&Logger{})); err != nil {
-		zap.S().Error("failure to add logger as an observer", "error", err)
+		zap.S().Errorw("failure to add logger as an observer", "error", err)
 	}
 
 	// Create the aggregate store.
@@ -116,15 +116,15 @@ func Close(
 	balanceRepo eventhorizon.ReadWriteRepo,
 ) {
 	if err := balanceRepo.Close(); err != nil {
-		zap.S().Error("error closing balance repo", "error", err)
+		zap.S().Errorw("error closing balance repo", "error", err)
 	}
 	if err := eventStore.Close(); err != nil {
-		zap.S().Error("error closing event store", "error", err)
+		zap.S().Errorw("error closing event store", "error", err)
 	}
 	if err := outbox.Close(); err != nil {
-		zap.S().Error("error closing outbox", "error", err)
+		zap.S().Errorw("error closing outbox", "error", err)
 	}
 	if err := eventBus.Close(); err != nil {
-		zap.S().Error("error closing event bus", "error", err)
+		zap.S().Errorw("error closing event bus", "error", err)
 	}
 }

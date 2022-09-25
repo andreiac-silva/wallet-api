@@ -18,7 +18,7 @@ func SetupEventBus() *gcp.EventBus {
 
 	go func() {
 		for e := range eventBus.Errors() {
-			zap.S().Error("there are errors on event bus flow", "error", e)
+			zap.S().Errorw("there are errors on event bus flow", "error", e)
 		}
 	}()
 

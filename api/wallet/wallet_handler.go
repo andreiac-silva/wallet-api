@@ -2,10 +2,9 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/gin-gonic/gin"
 	eh "github.com/looplab/eventhorizon"
 	"github.com/looplab/eventhorizon/uuid"
 	"go.uber.org/zap"
@@ -15,8 +14,7 @@ import (
 )
 
 const (
-	errInvalidID      = "Invalid id"
-	errInvalidPayload = "Payload could not be parsed"
+	id = "id"
 )
 
 type WalletHandler struct {
@@ -29,81 +27,94 @@ func NewWalletHandler(commandHandler eh.CommandHandler) WalletHandler {
 	}
 }
 
-func (h WalletHandler) Routes(router *chi.Mux) {
-	router.Method(http.MethodPost, "/wallets", api.Handler(h.create))
-	router.Method(http.MethodPatch, "/wallets/{id}/credit", api.Handler(h.credit))
-	router.Method(http.MethodPatch, "/wallets/{id}/debit", api.Handler(h.debit))
+func (h WalletHandler) Routes(router *gin.Engine) {
+	router.POST("/wallets", h.create)
+	router.PATCH("/wallets/:id/credit", h.credit)
+	router.PATCH("/wallets/:id/debit", h.debit)
 }
 
-func (h WalletHandler) create(w http.ResponseWriter, r *http.Request) error {
+func (h WalletHandler) create(c *gin.Context) {
 	request := CreateRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return api.ErrInvalidPayload{Message: errInvalidPayload}
+	if err := c.BindJSON(&request); err != nil {
+		zap.S().Errorw("invalid payload", "error", err)
+		_ = c.Error(api.ErrInvalidPayload{})
+		return
 	}
+
 	if err := request.Validate(); err != nil {
-		zap.S().Error("invalid create request field(s)", "error", err)
-		return err
+		zap.S().Errorw("invalid create request field(s)", "error", err)
+		_ = c.Error(err)
+		return
 	}
 
 	newWalletID := uuid.New()
 	cmd := commands.NewCreateWalletCommand(newWalletID, request.DocumentNumber)
 	if err := h.commandHandler.HandleCommand(context.Background(), cmd); err != nil {
-		zap.S().Error("create command could not be performed", "error", err)
-		return err
+		zap.S().Errorw("create command could not be performed", "error", err)
+		_ = c.Error(err)
+		return
 	}
 
-	api.Render.JSON(w, 201, CreateResponse{ID: newWalletID.String()})
-	return nil
+	c.JSON(http.StatusCreated, CreateResponse{ID: newWalletID.String()})
 }
 
-func (h WalletHandler) credit(w http.ResponseWriter, r *http.Request) error {
-	idStr := chi.URLParam(r, "id")
-	id, err := uuid.Parse(idStr)
+func (h WalletHandler) credit(c *gin.Context) {
+	idStr := c.Params.ByName(id)
+	wid, err := uuid.Parse(idStr)
 	if err != nil {
-		return api.ErrInvalidID{Message: errInvalidID}
+		_ = c.Error(api.ErrInvalidID{})
+		return
 	}
 
 	request := OperationRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return api.ErrInvalidPayload{Message: errInvalidPayload}
+	if err := c.BindJSON(&request); err != nil {
+		zap.S().Errorw("invalid payload", "error", err)
+		_ = c.Error(api.ErrInvalidPayload{})
+		return
 	}
+
 	if err := request.Validate(); err != nil {
-		zap.S().Error("invalid credit request field(s)", "error", err)
-		return api.ErrInvalidAttribute{Message: err.Error()}
+		zap.S().Errorw("invalid credit request field(s)", "error", err)
+		_ = c.Error(err)
+		return
 	}
 
-	cmd := commands.NewCreditCommand(id, request.Amount, request.Description)
+	cmd := commands.NewCreditCommand(wid, request.Amount, request.Description)
 	if err := h.commandHandler.HandleCommand(context.Background(), cmd); err != nil {
-		zap.S().Error("invalid credit command", "error", err)
-		return err
+		zap.S().Errorw("invalid credit command", "error", err)
+		_ = c.Error(err)
+		return
 	}
 
-	api.Render.JSON(w, 201, EmptyResponse)
-	return nil
+	c.JSON(http.StatusAccepted, nil)
 }
 
-func (h WalletHandler) debit(w http.ResponseWriter, r *http.Request) error {
-	idStr := chi.URLParam(r, "id")
-	id, err := uuid.Parse(idStr)
+func (h WalletHandler) debit(c *gin.Context) {
+	idStr := c.Params.ByName(id)
+	wid, err := uuid.Parse(idStr)
 	if err != nil {
-		return api.ErrInvalidID{Message: errInvalidID}
+		_ = c.Error(api.ErrInvalidID{})
+		return
 	}
 
 	request := OperationRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return api.ErrInvalidPayload{Message: errInvalidPayload}
+	if err := c.BindJSON(&request); err != nil {
+		zap.S().Errorw("invalid payload", "error", err)
+		_ = c.Error(api.ErrInvalidPayload{})
+		return
 	}
+
 	if err := request.Validate(); err != nil {
-		zap.S().Error("invalid debit request field(s)", "error", err)
-		return api.ErrInvalidAttribute{Message: err.Error()}
+		zap.S().Errorw("invalid debit request field(s)", "error", err)
+		_ = c.Error(err)
+		return
 	}
-
-	cmd := commands.NewDebitCommand(id, request.Amount, request.Description)
+	cmd := commands.NewDebitCommand(wid, request.Amount, request.Description)
 	if err := h.commandHandler.HandleCommand(context.Background(), cmd); err != nil {
-		zap.S().Error("invalid debit command", "error", err)
-		return err
+		zap.S().Errorw("invalid debit command", "error", err)
+		_ = c.Error(err)
+		return
 	}
 
-	api.Render.JSON(w, 201, EmptyResponse)
-	return nil
+	c.JSON(http.StatusAccepted, nil)
 }

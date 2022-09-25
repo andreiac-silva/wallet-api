@@ -3,16 +3,16 @@ package aggregates
 import (
 	"context"
 	"time"
-	"wallet-api/domain"
-	"wallet-api/domain/usecases"
 
 	eh "github.com/looplab/eventhorizon"
 	ehEvents "github.com/looplab/eventhorizon/aggregatestore/events"
 	"github.com/looplab/eventhorizon/uuid"
 	"go.uber.org/zap"
 
+	"wallet-api/domain"
 	"wallet-api/domain/commands"
 	"wallet-api/domain/events"
+	"wallet-api/domain/usecases"
 )
 
 type Wallet struct {

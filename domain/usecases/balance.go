@@ -2,12 +2,12 @@ package usecases
 
 import (
 	"context"
-	"wallet-api/domain"
 
 	eh "github.com/looplab/eventhorizon"
 	"github.com/looplab/eventhorizon/uuid"
 	"go.uber.org/zap"
 
+	"wallet-api/domain"
 	"wallet-api/domain/projections"
 )
 

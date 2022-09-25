@@ -2,13 +2,13 @@ package projections
 
 import (
 	"context"
-	"wallet-api/domain"
 
 	"github.com/looplab/eventhorizon"
 	"github.com/looplab/eventhorizon/eventhandler/projector"
 	"github.com/looplab/eventhorizon/uuid"
 	"go.uber.org/zap"
 
+	"wallet-api/domain"
 	"wallet-api/domain/events"
 )
 

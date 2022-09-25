@@ -35,7 +35,7 @@ func main() {
 
 	srv := server.SetupHTTPServer(handler)
 	if err := srv.ListenAndServe(); err != nil {
-		zap.S().Error("something went wrong starting http server", "error", err)
+		zap.S().Errorw("something went wrong starting http server", "error", err)
 	}
 
 	defer eventsourcing.Close(eventBus, eventStore, outbox, balanceRepo)

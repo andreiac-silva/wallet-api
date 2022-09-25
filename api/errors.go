@@ -1,19 +1,16 @@
 package api
 
 type ErrInvalidPayload struct {
-	Message string
 }
 
 func (e ErrInvalidPayload) Error() string {
-	return e.Message
+	return "payload could not be parsed"
 }
 
-type ErrInvalidID struct {
-	Message string
-}
+type ErrInvalidID struct{}
 
 func (e ErrInvalidID) Error() string {
-	return e.Message
+	return "invalid ID"
 }
 
 type ErrInvalidAttribute struct {

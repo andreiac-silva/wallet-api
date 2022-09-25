@@ -17,7 +17,7 @@ func SetupOutbox(client *mongo.Client) *mongoOutbox.Outbox {
 
 	go func() {
 		for e := range outbox.Errors() {
-			zap.S().Error("there are errors on outbox flow", "error", e)
+			zap.S().Errorw("there are errors on outbox flow", "error", e)
 		}
 	}()
 
