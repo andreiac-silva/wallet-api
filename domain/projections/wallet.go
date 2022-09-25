@@ -2,7 +2,6 @@ package projections
 
 import (
 	"context"
-
 	"github.com/looplab/eventhorizon"
 	"github.com/looplab/eventhorizon/eventhandler/projector"
 	"github.com/looplab/eventhorizon/uuid"
@@ -44,6 +43,7 @@ func (p *BalanceProjector) Project(_ context.Context, event eventhorizon.Event, 
 		zap.S().Errorf("projection entity could not be handled: %v", entity)
 		return nil, domain.ErrUnprocessable{Message: "Projection entity could not be handled"}
 	}
+
 	switch event.EventType() {
 	case domain.WalletCreatedEvent:
 		if err := applyCreatEvent(event, balance); err != nil {

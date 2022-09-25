@@ -1,0 +1,15 @@
+[
+  {
+    "createIndexes": "events",
+    "indexes": [
+      {
+        "key": {
+          "aggregate_id": 1,
+          "version": 1
+        },
+        "name": "unique_event_version",
+        "unique": true
+      }
+    ]
+  }
+]
