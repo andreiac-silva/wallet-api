@@ -15,6 +15,14 @@ There are two different simple ways to run and stop the application:
 - By Makefile: `make start` | `make stop`
 - By Docker:   `docker compose up -d --build` | `docker compose down -v`
 
+### Migrations
+
+To apply database migrations, run `make db-migrate` informing the database URI. Example:
+
+```sh
+make MONGO_URL="mongodb://mongo1:30001,mongo2:30002,mongo3:30003/balance?replicaSet=my-replica-set" db-migrate
+```
+
 ## API
 
 | Method |          Resource           | 

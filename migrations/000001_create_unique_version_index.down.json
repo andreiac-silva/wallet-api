@@ -1,0 +1,6 @@
+[
+  {
+    "dropIndexes": "events",
+    "index": "unique_event_version"
+  }
+]
