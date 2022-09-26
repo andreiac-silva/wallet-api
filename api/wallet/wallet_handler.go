@@ -86,7 +86,7 @@ func (h WalletHandler) credit(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusAccepted, nil)
+	c.JSON(http.StatusAccepted, EmptyResponse)
 }
 
 func (h WalletHandler) debit(c *gin.Context) {
@@ -116,5 +116,5 @@ func (h WalletHandler) debit(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusAccepted, nil)
+	c.JSON(http.StatusAccepted, EmptyResponse)
 }
